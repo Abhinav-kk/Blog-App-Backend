@@ -18,6 +18,17 @@ router.post('/users', jsonParser, async (req, res) => {
     res.json(users);
 });
 
+// Route to get all users by username
+router.post('/user', jsonParser, async (req, res) => {
+    const users = await User.findOne({
+        userName: req.body.userName
+    });
+    if (users) {
+        users.password = undefined;
+    }
+    res.json(users);
+});
+
 // Route for removing liked posts ID
 router.post('/unlike-posts/:userEmail', jsonParser, async (req, res) => {
     const email = req.params.userEmail;
@@ -111,6 +122,15 @@ router.get('/liked-posts/:userEmail', async (req, res) => {
     });
 });
 
+//Get Post's liked users
+router.post('/post/:postID/liked-users', jsonParser, async (req, res) => {
+    const postID = req.params.postID;
+    const postsLikedUsers = await User.find({ "likedPosts.postID": postID });
+    for (let i = 0; i < postsLikedUsers.length; i++) {
+        postsLikedUsers[i].password = undefined;
+    }
+    res.json(postsLikedUsers);
+});
 
 // Route to create a new user
 router.post('/signup', jsonParser, async (req, res) => {
